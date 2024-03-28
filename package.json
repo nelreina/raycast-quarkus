@@ -30,6 +30,76 @@
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
+  "preferences": [
+    {
+      "name": "platform",
+      "title": "Quarkus Platform",
+      "description": "Select the Quarkus platform to generate the project.",
+      "type": "dropdown",
+      "required": true,
+      "data": [
+        {
+          "value": "io.quarkus.platform:3.8",
+          "title": "Quarkus 3.8"
+        },
+        {
+          "value": "io.quarkus.platform:3.9",
+          "title": "Quarkus 3.9"
+        },
+        {
+          "value": "io.quarkus.platform:3.2",
+          "title": "Quarkus 3.2"
+        }
+      ],
+      "default": "io.quarkus.platform:3.8"
+
+    },
+    {
+      "name": "build-tool",
+      "title": "Build Tool",
+      "description": "Select the build tool to generate the project.",
+      "type": "dropdown",
+      "required": true,
+      "data": [
+        {
+          "title": "Maven",
+          "value": "MAVEN"
+        },
+        {
+          "title": "Gradle",
+          "value": "GRADLE"
+        }
+      ],
+      "default": "MAVEN"
+
+    },
+    {
+      "name": "groupId",
+      "title": "Group ID",
+      "description": "The group ID of the project.",
+      "type": "textfield",
+      "required": true,
+      "default": "org.acme"
+    },
+    {
+      "name": "artifactId",
+      "title": "Artifact ID",
+      "description": "The artifact ID of the project.",
+      "type": "textfield",
+      "required": true,
+      "default": "quarkus-project"
+    },
+    {
+      "name": "version",
+      "title": "Version",
+      "description": "The version of the project.",
+      "type": "textfield",
+      "required": true,
+      "default": "1.0.0-SNAPSHOT"
+    }
+    
+  
+  ],
   "scripts": {
     "build": "ray build -e dist",
     "dev": "ray develop",
