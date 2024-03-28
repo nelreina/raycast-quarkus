@@ -1,15 +1,32 @@
 // Generate url for the API
-export const generateUrl = (host, path, queries) => {
+export const generateUrl = (host, path, queries, extensions) => {
   let url = `${host}${path}`;
+  let sortedQueries = {};
+  if (queries) {
+    // Sort the queries
+    Object.keys(queries)
+      .sort()
+      .forEach(function (key) {
+        sortedQueries[key] = queries[key];
+      });
+  }
   if (queries) {
     url += "?";
-    for (let key in queries) {
+    for (let key in sortedQueries) {
       // key is first letter of the query
       let qk = key[0].toLowerCase();
-      console.log("LOG:  ~ generateUrl ~ qk:", qk);
+      qk = qk === "p" ? "S" : qk;
       url += `${qk}=${queries[key]}&`;
     }
   }
+  if (extensions) {
+    for (let ext of extensions) {
+      url += `e=${ext}&`;
+    }
+  }
+
+  // Remove the last '&' from the url
+  url = url.slice(0, -1);
 
   return url;
 };

@@ -15,7 +15,18 @@
       "name": "index",
       "title": "Create a project",
       "description": "Generate a project with desired extensions, dependencies, and properties, providing a tailored and efficient Quarkus application setup process.",
-      "mode": "view"
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "artifactId",
+          "title": "Artifact ID",
+          "description": "The artifact ID of the project.",
+          "type": "text",
+          "required": true,
+          "placeholder": "my-quarkus-app"
+        }
+      ]
+    
     }
   ],
   "dependencies": {
@@ -80,14 +91,6 @@
       "type": "textfield",
       "required": true,
       "default": "org.acme"
-    },
-    {
-      "name": "artifactId",
-      "title": "Artifact ID",
-      "description": "The artifact ID of the project.",
-      "type": "textfield",
-      "required": true,
-      "default": "quarkus-project"
     },
     {
       "name": "version",
