@@ -28,9 +28,10 @@ export default function Command() {
           id={extension.id}
           icon="list-icon.png"
           title={extension.shortName || extension.name}
-          detail={<List.Item.Detail markdown={`## ${extension.shortName || extension.name} \n
-_${extension.id}_ \n\n
-> ${extension.description} \n
+          detail={<List.Item.Detail markdown={`
+## ${extension.shortName || extension.name}  \n
+> _${extension.id}:${extension.version}_ \n\n
+${extension.description} \n
 `} />}
           actions={
             <ActionPanel>
