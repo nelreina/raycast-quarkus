@@ -26,12 +26,12 @@
           "placeholder": "code-with-quarkus"
         }
       ]
-    
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.70.3",
-    "@raycast/utils": "^1.13.5"
+    "@raycast/utils": "^1.13.5",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.6",
@@ -63,7 +63,6 @@
         }
       ],
       "default": "io.quarkus.platform:3.8"
-
     },
     {
       "name": "build-tool",
@@ -82,7 +81,6 @@
         }
       ],
       "default": "MAVEN"
-
     },
     {
       "name": "groupId",
@@ -99,9 +97,15 @@
       "type": "textfield",
       "required": true,
       "default": "1.0.0-SNAPSHOT"
+    },
+    {
+      "name": "directory",
+      "title": "Downloads Directory",
+      "description": "Dowload the project in the specified directory",
+      "type": "directory",
+      "required": true,
+      "default": "~/Downloads"
     }
-    
-  
   ],
   "scripts": {
     "build": "ray build -e dist",

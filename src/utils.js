@@ -14,9 +14,11 @@ export const generateUrl = (host, path, queries, extensions) => {
     url += "?";
     for (let key in sortedQueries) {
       // key is first letter of the query
-      let qk = key[0].toLowerCase();
-      qk = qk === "p" ? "S" : qk;
-      url += `${qk}=${queries[key]}&`;
+      if (key !== "directory") {
+        let qk = key[0].toLowerCase();
+        qk = qk === "p" ? "S" : qk;
+        url += `${qk}=${queries[key]}&`;
+      }
     }
   }
   if (extensions) {
