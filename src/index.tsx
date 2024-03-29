@@ -30,6 +30,11 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
     // console.log(url);
     await open(url);
   };
+
+  const showExtensionGuide = async (url: string) => {
+    console.log(url);
+    await open(url);
+  }
  
 
   for (const ids of extensionListIds) {
@@ -57,6 +62,7 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
             <ActionPanel>
               <Action title="Remove" onAction={() => { setSelectedExtensionIds((s) => s.filter((x) => x !== sext?.id))  }} />
               <Action title="Generate Project" onAction={generateProject} />
+              <Action title="See Extension Guide" onAction={() => showExtensionGuide(sext?.guide)} shortcut={{modifiers: ["cmd"], key: "g"}} />
             </ActionPanel>
           }
           />
@@ -75,6 +81,7 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
           <ActionPanel>
               <Action title="Select" onAction={() => { setSelectedExtensionIds(s => !s.includes(data) ?  [...s, data || ""] : s) }} />
               <Action title="Generate Project" onAction={generateProject} />
+              <Action title="See Extension Guide" onAction={() => showExtensionGuide(sext?.guide)} shortcut={{modifiers: ["cmd"], key: "g"}} />
             </ActionPanel>
           }
         />
