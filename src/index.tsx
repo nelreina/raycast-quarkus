@@ -53,17 +53,26 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
     uniqueExtensionList.push((extensionList as Array<any>).find((extension) => extension.id === ids));
   }
   useEffect(() => {
-    if (extensionList) {
       setSelectedExtensions(selectedExtensionIds.map((id) => (extensionList as Array<any>).find((extension) => extension.id === id)));
 
-    }
-  }, [selectedExtensionIds, isLoading]);
-
+  }, [selectedExtensionIds]);
+  useEffect(() => {
+    const getSavedExtensions = async () => {
+      const savedExtensions = await LocalStorage.getItem("selectedExtensions");
+      if (selectedExtensions) {
+        const parsedExtensions = JSON.parse(savedExtensions || "[]");
+        setSelectedExtensions(parsedExtensions);
+        setSelectedExtensionIds(parsedExtensions.map((ext) => ext.id));
+      }
+    };
+    getSavedExtensions();
+  }, []);
+  
   return (
     <>
     
     <List isLoading={isLoading} isShowingDetail onSelectionChange={setData} >
-      <List.Section title={`Selected Quarkus Extensions (${selectedExtensionIds?.length}) `} >
+      <List.Section title={`Selected Quarkus Extensions (${selectedExtensions?.length}) `} >
       {selectedExtensions?.map((sext) => (
         <List.Item
           key={sext?.id}
