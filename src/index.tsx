@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ActionPanel, open, List, Action, Icon, LaunchProps, LocalStorage, Toast, showToast, Clipboard } from "@raycast/api";
+import { ActionPanel, open, List, Action, Icon, LaunchProps, LocalStorage, Toast, showToast, Clipboard ,trash} from "@raycast/api";
 
 import { useEffect, useState } from "react";
 import { useFetch } from "@raycast/utils"
 import { generateUrl } from "./utils.js";
 // node-fetch is a light-weight module that brings window.fetch to Node.js
 import fetch from "node-fetch";
-import { writeFile } from "fs/promises";
-
+import { writeFile, access } from "fs/promises";
+import decompress from "decompress";
 
 
 import { getPreferenceValues } from "@raycast/api";
@@ -54,31 +54,58 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
   const { isLoading, data: extensionList } = useFetch(host + "/api/extensions", { mapResult: removeDuplicatesIds },)
 
   const downloadProject = async () => {
-    const toast = await showToast({ style: Toast.Style.Animated, title: "Download... ", message: "Your project is being downloaded." });
+    const toast = await showToast({ style: Toast.Style.Animated, title: "Downloading... " });
     let { artifactId } = props.arguments;
-    let {directory} = preferences;
+    let {directory, platform, buildTool, groupId, version, unzip} = preferences;
+    const query = { platform, buildTool, groupId, version };
+    let exists = false;
     if (!artifactId) {
       artifactId = "code-with-quarkus";
     }
-    const ids = selectedExtensionIds.map((id) => id.split(":")[1]);
-    const url = generateUrl(host, "/api/download", { ...preferences, artifactId }, ids);
-    // fetch zip file to download
+    const path = `${directory}/${artifactId}`
     try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      // Save zip file to disk
-      const uint8Array = new Uint8Array(buffer);
-      const filePath = `${directory}/${artifactId}.zip`; 
-      const path = await writeFile(filePath, uint8Array);
-      toast.style = Toast.Style.Success;
-      toast.title = "Project Downloaded";
-      
+      await access(path);
+      exists = true;
     } catch (error) {
-      console.error(error);
-      toast.style = Toast.Style.Failure;
-      toast.title = "Failed to Download Project";
-      toast.message = error.message;      
+      // Do nothing if directory does not exist
     }
+    if (exists) {
+      toast.style = Toast.Style.Failure;
+      toast.title = `Project "${artifactId}" already exists in the directory!`;
+    } else {
+      toast.title = "Starting Download...";
+      const ids = selectedExtensionIds.map((id) => id.split(":")[1]);
+      const url = generateUrl(host, "/api/download", { ...query, artifactId }, ids);
+      // fetch zip file to download
+      try {
+        
+        const response = await fetch(url);
+        const buffer = await response.arrayBuffer();
+        // Save zip file to disk
+        const uint8Array = new Uint8Array(buffer);
+        const filePath = `${path}.zip`; 
+        await writeFile(filePath, uint8Array);
+        toast.style = Toast.Style.Success;
+        toast.title = "Downloaded";
+        toast.message = `Project downloaded to ${filePath}`;
+        if (!unzip) {
+          return;
+        }
+        await decompress(filePath, directory);
+        await trash(filePath);
+        await Clipboard.copy(path);
+  
+  
+      } catch (error) {
+        console.error(error);
+        toast.style = Toast.Style.Failure;
+        toast.title = "Failed to Download Project";
+        toast.message = error.message;      
+      }
+
+    }
+
+
     // console.log(path);
 
     // console.log(url);
