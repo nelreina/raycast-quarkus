@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "raycast-quarkus",
-  "title": "Quarkus Raycast",
-  "description": "Quarkus.io is a platform for streamlined Java development, offering unified configuration, no-hassle native executable generation, and zero config with live reload capabilities, enhancing developer productivity. It provides a seamless experience with quick startup time and efficient resource utilization. [^1]\n\n[^1]: https://quarkus.io/",
+  "title": "Raycast Quarkus",
+  "description": "The Raycast Quarkus Extension is a productivity tool designed to simplify the process of referencing Quarkus extensions, creating and downloading dependency snippets.",
   "icon": "command-icon.png",
   "author": "nelreina",
   "categories": [
@@ -13,7 +13,7 @@
   "commands": [
     {
       "name": "index",
-      "title": "List Extensions",
+      "title": "List Quarkus Extensions",
       "description": "Generate a project with desired extensions, dependencies, and properties, providing a tailored and efficient Quarkus application setup process.",
       "mode": "view",
       "arguments": [
