@@ -15,6 +15,26 @@ interface Preferences {
 }
 const host = "https://code.quarkus.io";
 
+const removeDuplicatesIds = (result: any) => {
+  const ids = new Set<string>((result )?.map((i: any) => i.id));
+  const data: any[] = [];
+  for (const id of ids) {
+    const item = result.find((i: { id: string; }) => i.id === id);
+    if (item) {
+      data.push(item);
+    }
+  }
+  // Sort data by name
+
+  return {
+    data: {
+      items: data,
+      map: (arg0: (i: any) => any) => null,
+    },
+  };
+}
+
+
 const getDependcyString = (extensionId: string) => {
   return `<dependency>
     <groupId>${extensionId.split(":")[0]}</groupId>
@@ -27,11 +47,8 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
   const [selectedExtensionIds, setSelectedExtensionIds] = useState<string[]>([]);
   const [selectedExtensions, setSelectedExtensions] = useState<object[] | null>([]);
   const [data, setData] = useState<string | null>(null);
-  const uniqueExtensionList: any[] = [];
-  const { isLoading, data: extensionList } = useFetch(host + "/api/extensions", {},)
-  const extensionListIds = new Set((extensionList as Array<any>)?.map((extension) => extension.id));
-
-  const generateProject = async () => {
+  const { isLoading, data: extensionList } = useFetch(host + "/api/extensions", { mapResult: removeDuplicatesIds },)
+ const generateProject = async () => {
     let { artifactId } = props.arguments;
     if (!artifactId) {
       artifactId = "code-with-quarkus";
@@ -72,11 +89,8 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
   }
 
 
-  for (const ids of extensionListIds) {
-    uniqueExtensionList.push((extensionList as Array<any>).find((extension) => extension.id === ids));
-  }
   useEffect(() => {
-    setSelectedExtensions(selectedExtensionIds.map((id) => (extensionList as Array<any>).find((extension) => extension.id === id)));
+    setSelectedExtensions(selectedExtensionIds.map((id) => (extensionList.items as Array<any>).find((extension) => extension.id === id)));
 
   }, [selectedExtensionIds]);
   useEffect(() => {
@@ -100,7 +114,7 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
             <List.Item
               key={sext?.id}
               icon={Icon.Checkmark}
-              title={sext?.shortName || sext?.name}
+              title={sext?.name}
               detail={<ExtensionDetail extension={sext} />}
               actions={
                 <ActionPanel>
@@ -116,19 +130,19 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
         </List.Section>
 
         <List.Section title="Quarkus Extensions">
-          {(uniqueExtensionList as Array<any> || [])?.map((extension) => (
+          {(extensionList?.items as Array<any> || [])?.map((extension) => (
             <List.Item
               key={extension?.id}
               id={extension?.id}
               icon="list-icon.png"
-              title={extension?.shortName || extension?.name}
+              title={extension?.name}
               detail={<ExtensionDetail extension={extension} />}
               actions={
                 <ActionPanel>
                   <Action title="Select" onAction={() => { setSelectedExtensionIds(s => !s.includes(data) ? [...s, data || ""] : s) }} />
                   <Action title="Copy Dependency" onAction={() => copyDependency(extension?.id)} />
                   <Action title="Download Project" onAction={generateProject} shortcut={{ modifiers: ["cmd"], key: "d" }} />
-                  <Action title="See Extension Guide" onAction={() => showExtensionGuide(sext?.guide)} shortcut={{ modifiers: ["cmd"], key: "g" }} />
+                  <Action title="See Extension Guide" onAction={() => showExtensionGuide(extension?.guide)} shortcut={{ modifiers: ["cmd"], key: "g" }} />
                   <Action title="Clear Saved Extensions" onAction={clearSavedExtensions}  />
                 </ActionPanel>
               }
@@ -143,7 +157,7 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
 const ExtensionDetail: React.FC<{ extension: any }> = ({ extension }) => {
   return (
     <List.Item.Detail markdown={`
-## ${extension?.shortName || extension?.name}  \n
+## ${extension?.name}  \n
 > _${extension?.id}:${extension?.version}_ \n\n
 ${extension?.description} \n
 
