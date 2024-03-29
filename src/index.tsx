@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ActionPanel, open,  List, Action, Icon, LaunchProps } from "@raycast/api";
+import { ActionPanel, open,  List, Action, Icon, LaunchProps ,LocalStorage, Toast, showToast} from "@raycast/api";
+
 import { useEffect, useState } from "react";
 import { useFetch } from "@raycast/utils"
 import { generateUrl } from "./utils.js";
@@ -14,6 +15,7 @@ interface Preferences {
 }
 const host = "https://code.quarkus.io";
 
+
 export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCommand }>) {
   const preferences = getPreferenceValues<Preferences>();
   const [selectedExtensionIds, setSelectedExtensionIds] = useState<string[]>([]);
@@ -22,7 +24,7 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
   const uniqueExtensionList: any[] = [];
   const { isLoading, data: extensionList } = useFetch(host + "/api/extensions", {},)
   const extensionListIds = new Set((extensionList as Array<any>)?.map((extension) => extension.id));
-
+  
   const generateProject = async () => {
     const {artifactId} = props.arguments;
     const ids = selectedExtensionIds.map((id) => id.split(":")[1]);
@@ -30,6 +32,16 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
     // console.log(url);
     await open(url);
   };
+  
+  const saveExtensions = async () => {
+    const options: Toast.Options = {
+      style: Toast.Style.Success,
+      title: "Extenstions Saved",
+      message: "Selected extensions have been saved.",
+    };
+    await LocalStorage.setItem("selectedExtensions", JSON.stringify(selectedExtensions));
+    await showToast(options);
+  }
 
   const showExtensionGuide = async (url: string) => {
     console.log(url);
@@ -63,6 +75,7 @@ export default  function Command(props: LaunchProps<{ arguments: Arguments.MyCom
               <Action title="Remove" onAction={() => { setSelectedExtensionIds((s) => s.filter((x) => x !== sext?.id))  }} />
               <Action title="Generate Project" onAction={generateProject} />
               <Action title="See Extension Guide" onAction={() => showExtensionGuide(sext?.guide)} shortcut={{modifiers: ["cmd"], key: "g"}} />
+              <Action title="Save Selected Extensions" onAction={saveExtensions} shortcut={{modifiers: ["cmd"], key: "s"}} />
             </ActionPanel>
           }
           />
