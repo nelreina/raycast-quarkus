@@ -13,9 +13,12 @@ import decompress from "decompress";
 import { getPreferenceValues } from "@raycast/api";
 
 interface Preferences {
-  name: string;
-  bodyWeight?: string;
-  bodyHeight?: string;
+  directory: string;
+  platform: string;
+  buildTool: string;
+  groupId: string;
+  version: string;
+  unzip: boolean;
 }
 const host = "https://code.quarkus.io";
 
@@ -46,7 +49,8 @@ const getDependcyString = (extensionId: string) => {
 </dependency>`;
 }
 
-export default function Command(props: LaunchProps<{ arguments: Arguments.MyCommand }>) {
+
+export default function Command(props: any) {
   const preferences = getPreferenceValues<Preferences>();
   const [selectedExtensionIds, setSelectedExtensionIds] = useState<string[]>([]);
   const [selectedExtensions, setSelectedExtensions] = useState<object[] | null>([]);
@@ -54,6 +58,8 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
   const { isLoading, data: extensionList } = useFetch(host + "/api/extensions", { mapResult: removeDuplicatesIds },)
 
   const downloadProject = async () => {
+
+
     const toast = await showToast({ style: Toast.Style.Animated, title: "Downloading... " });
     let { artifactId } = props.arguments;
     let {directory, platform, buildTool, groupId, version, unzip} = preferences;
@@ -100,16 +106,10 @@ export default function Command(props: LaunchProps<{ arguments: Arguments.MyComm
         console.error(error);
         toast.style = Toast.Style.Failure;
         toast.title = "Failed to Download Project";
-        toast.message = error.message;      
+        toast.message = (error as Error).message;      
       }
 
     }
-
-
-    // console.log(path);
-
-    // console.log(url);
-    // await open(url);
   };
 
   const saveExtensions = async () => {
